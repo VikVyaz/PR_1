@@ -4,21 +4,21 @@ import urllib.request
 import requests
 import pandas as pd
 import datetime
-from collections import deque
 import json
 from dotenv import load_dotenv
 import finnhub
+from typing import Union, Any
 
 load_dotenv()
 
 
-def main_page(date: str) -> dict:
+def main_page(date: str, original_data: str, original_user_settings: str) -> dict:
     """Main-функция для Веб-страницы/Страница 'Главная'
     """
 
-    data = to_open_file('../data/operations.xlsx')
+    data = to_open_file(original_data)
+    user_settings = to_open_file(original_user_settings)
     filtered_data = to_get_filtered_data(date, data)
-    user_settings = to_open_file('../user_settings.json')
     result = {
         'greeting': greeting(),
         'cards': show_cards_info(filtered_data),
@@ -30,10 +30,10 @@ def main_page(date: str) -> dict:
     return result
 
 
-def to_open_file(path: str) -> [list, dict]:
+def to_open_file(path: str) -> Union[list, dict]:
     """Функция открытия файла(JSON/CSV/XLSX опционально)"""
 
-    df = []
+    df = pd.DataFrame()
     if '.json' in path:
         with open(path, encoding='utf-8') as f:
             data = json.load(f)
@@ -138,7 +138,7 @@ def show_top_transactions(filtered_data: list[dict]) -> list:
     return top_5
 
 
-def show_currency_rates(user_settings: dict) -> list:
+def show_currency_rates(user_settings: dict) -> Union[list, None]:
     """Функция обработки и вывода курсов
     необходимых (согласно user_settings.json) валют"""
 
@@ -191,4 +191,6 @@ def show_stock_prices(user_settings: dict) -> list:
 
 
 if __name__ == '__main__':
-    print(main_page('2021-10-30 15:23:22'))
+    from_data = '../data/operations.xlsx'
+    from_user_settings = '../user_settings.json'
+    print(main_page('2021-10-30 15:23:22', from_data, from_user_settings))
