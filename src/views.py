@@ -1,57 +1,32 @@
+import datetime
 import os
 import urllib.parse
 import urllib.request
-import requests
-import pandas as pd
-import datetime
-import json
-from dotenv import load_dotenv
+from typing import Union
+
 import finnhub
-from typing import Union, Any
+import requests
+from dotenv import load_dotenv
+
+from src.utils import to_open_file
 
 load_dotenv()
 
 
-def main_page(date: str, original_data: str, original_user_settings: str) -> dict:
+def main_page(date: str) -> dict:
     """Main-функция для Веб-страницы/Страница 'Главная'
     """
 
-    data = to_open_file(original_data)
-    user_settings = to_open_file(original_user_settings)
+    data = to_open_file('../data/operations.xlsx')
+    user_settings = to_open_file('../user_settings.json')
     filtered_data = to_get_filtered_data(date, data)
     result = {
         'greeting': greeting(),
         'cards': show_cards_info(filtered_data),
         'top_transactions': show_top_transactions(filtered_data),
-        'currency_rate': show_currency_rates(user_settings),
-        'stock_prices': show_stock_prices(user_settings)
+        'currency_rate': show_currency_rates(dict(user_settings)),
+        'stock_prices': show_stock_prices(dict(user_settings))
     }
-
-    return result
-
-
-def to_open_file(path: str) -> Union[list, dict]:
-    """Функция открытия файла(JSON/CSV/XLSX опционально)"""
-
-    df = pd.DataFrame()
-    if '.json' in path:
-        with open(path, encoding='utf-8') as f:
-            data = json.load(f)
-        return data
-    elif '.csv' in path:
-        df = pd.read_csv(path, delimiter=';')
-    elif '.xlsx' in path:
-        df = pd.read_excel(path)
-
-    df = df.astype('object')
-    pd.set_option('future.no_silent_downcasting', True)
-    df.fillna("", inplace=True)
-    result = df.to_dict('records')
-
-    for transaction in result:
-        for key, value in transaction.items():
-            if key == 'id' and value:
-                transaction[key] = int(value)
 
     return result
 
@@ -91,7 +66,7 @@ def greeting() -> str:
     return current_greeting
 
 
-def show_cards_info(filtered_data: list[dict]) -> list:
+def show_cards_info(filtered_data: list) -> list:
     """Функция отображения данный по картам:
     1. 4 последних цифры карт,
     2. Общие траты,
@@ -138,7 +113,7 @@ def show_top_transactions(filtered_data: list[dict]) -> list:
     return top_5
 
 
-def show_currency_rates(user_settings: dict) -> Union[list, None]:
+def show_currency_rates(user_settings: dict) -> Union[list, str]:
     """Функция обработки и вывода курсов
     необходимых (согласно user_settings.json) валют"""
 
@@ -166,9 +141,9 @@ def show_currency_rates(user_settings: dict) -> Union[list, None]:
         ]
         return result
     except requests.exceptions.HTTPError as e:
-        print(f"HTTPError: {e.response.status_code} - {e.response.reason}")
+        return f"HTTPError: {e.response.status_code} - {e.response.reason}"
     except requests.exceptions.RequestException as e:
-        print(f"RequestException: {e}")
+        return f"RequestException: {e}"
 
 
 def show_stock_prices(user_settings: dict) -> list:
@@ -191,6 +166,4 @@ def show_stock_prices(user_settings: dict) -> list:
 
 
 if __name__ == '__main__':
-    from_data = '../data/operations.xlsx'
-    from_user_settings = '../user_settings.json'
-    print(main_page('2021-10-30 15:23:22', from_data, from_user_settings))
+    print(main_page('2021-10-30 15:23:22'))
