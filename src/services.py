@@ -1,6 +1,7 @@
-import datetime
+from datetime import datetime
 from collections import defaultdict
 from typing import DefaultDict
+from src.reports import to_log_decorator
 
 from src.utils import to_open_file
 
@@ -20,8 +21,8 @@ def to_filter_data(data: list, year: int, month: int) -> list:
 
     filtered_data = list(filter(
         lambda x:
-        datetime.datetime.strptime(x['Дата операции'], '%d.%m.%Y %H:%M:%S').year == year
-        and datetime.datetime.strptime(x['Дата операции'], '%d.%m.%Y %H:%M:%S').month == month,
+        datetime.strptime(x["Дата операции"], '%d.%m.%Y %H:%M:%S').year == year
+        and datetime.strptime(x["Дата операции"], '%d.%m.%Y %H:%M:%S').month == month,
         data
     ))
 
@@ -34,14 +35,15 @@ def to_get_category(data: list) -> dict:
     result: DefaultDict[str, int] = defaultdict(int)
     for transaction in data:
         for key, value in transaction.items():
-            if key == "Категория" and transaction["Кэшбэк"]:
-                result[value] += transaction["Кэшбэк"]
+            if key == 'Категория' and transaction['Кэшбэк']:
+                result[value] += transaction['Кэшбэк']
 
     return dict(result)
 
 
-# if __name__ == '__main__':
-#     from_data = to_open_file('../data/operations.xlsx')
-#     from_year = 2021
-#     from_month = 10
-#     print(cashback_profit(from_data, from_year, from_month))
+if __name__ == '__main__':
+    from_data = to_open_file('../data/operations.xlsx')
+    # from_data = to_open_file('../draft/operations.json')
+    from_year = 2021
+    from_month = 12
+    print(cashback_profit(from_data, from_year, from_month))
