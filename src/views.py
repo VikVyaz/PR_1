@@ -165,5 +165,5 @@ def show_stock_prices(user_settings: dict) -> list:
     return result
 
 
-if __name__ == '__main__':
-    print(main_page('2021-10-30 15:23:22'))
+# if __name__ == '__main__':
+#     print(main_page('2021-10-30 15:23:22'))
