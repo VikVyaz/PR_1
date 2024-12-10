@@ -14,11 +14,16 @@ load_dotenv()
 
 
 def main_page(date: str) -> dict:
-    """Main-функция для Веб-страницы/Страница 'Главная'
+    """Функция для отображения данных на главной странице:
+    1. Приветствие
+    2. Информация о картах
+    3. Топ-5 транзакция за данный период
+    4. Курс валют
+    5. Курс S&P500
     """
 
-    data = to_open_file('../data/operations.xlsx')
-    user_settings = to_open_file('../user_settings.json')
+    data = to_open_file('./data/operations.xlsx')
+    user_settings = to_open_file('./user_settings.json')
     filtered_data = to_get_filtered_data(date, data)
     result = {
         'greeting': greeting(),
@@ -165,5 +170,5 @@ def show_stock_prices(user_settings: dict) -> list:
     return result
 
 
-# if __name__ == '__main__':
-#     print(main_page('2021-10-30 15:23:22'))
+if __name__ == '__main__':
+    print(main_page('2021-10-30 15:23:22'))

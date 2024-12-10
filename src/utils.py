@@ -1,4 +1,5 @@
 from typing import Any
+import json
 
 import pandas as pd
 
@@ -13,7 +14,12 @@ def to_open_file(path: str, type_list_else_df: bool = True) -> Any:
 
     df = pd.DataFrame()
     if '.json' in path:
-        df = pd.read_json(path)
+        try:
+            df = pd.read_json(path)
+        except ValueError:
+            with open(path, encoding='utf-8') as f:
+                data = json.load(f)
+                return data
     elif '.csv' in path:
         df = pd.read_csv(path, delimiter=';')
     elif '.xlsx' in path:

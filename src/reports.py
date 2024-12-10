@@ -22,7 +22,7 @@ def to_log_decorator(file_name: str = "") -> Any:
     if not file_name:
         file_name = "default_log_file"
 
-    log_dir = "../logs"
+    log_dir = "./logs"
     os.makedirs(log_dir, exist_ok=True)
 
     logging.basicConfig(level=logging.INFO,
