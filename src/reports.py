@@ -8,7 +8,7 @@ from typing import Any, Optional
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-from src.utils import to_open_file
+# from src.utils import to_open_file
 
 
 # -------------------------------------------------logging--------------------------------------------------------------
@@ -57,7 +57,7 @@ def spending_by_category(transactions: pd.DataFrame,
 
     * transactions - DataFrame с транзакциями
     * category - категория, по которой вычисляются траты
-    * date - дата, от которой ведется исчисления периода трат
+    * date - дата, от которой ведется исчисление трат за последние 3 месяца
         ** по умолчанию - сегодня; формат - "YYYY-MM-DD HH:MM:SS"
     """
 

@@ -37,12 +37,14 @@ def to_get_category(data: list) -> dict:
             if key == 'Категория' and transaction['Кэшбэк']:
                 result[value] += transaction['Кэшбэк']
 
-    return dict(result)
+    sorted_result = dict(sorted(dict(result).items(), key=lambda x: x[1], reverse=True))
+
+    return sorted_result
 
 
 if __name__ == '__main__':
     from_data = to_open_file('../data/operations.xlsx')
 #     from_data = to_open_file('../draft/operations.json')
     from_year = 2021
-    from_month = 10
+    from_month = 9
     print(cashback_profit(from_data, from_year, from_month))

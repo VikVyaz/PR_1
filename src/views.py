@@ -12,6 +12,9 @@ from src.utils import to_open_file
 
 load_dotenv()
 
+main_page_data_path = './data/operations.xlsx'
+main_page_user_settings_path = './user_settings.json'
+
 
 def main_page(date: str) -> dict:
     """Функция для отображения данных на главной странице:
@@ -22,8 +25,8 @@ def main_page(date: str) -> dict:
     5. Курс S&P500
     """
 
-    data = to_open_file('./data/operations.xlsx')
-    user_settings = to_open_file('./user_settings.json')
+    data = to_open_file(main_page_data_path)
+    user_settings = to_open_file(main_page_user_settings_path)
     filtered_data = to_get_filtered_data(date, data)
     result = {
         'greeting': greeting(),
@@ -63,8 +66,10 @@ def greeting() -> str:
 
     if 6 <= current_time < 12:
         current_greeting = 'Доброе утро!'
-    elif 12 <= current_time < 18:
+    elif 12 <= current_time < 17:
         current_greeting = 'Добрый день!'
+    elif 17 <= current_time < 22:
+        current_greeting = 'Добрый вечер!'
     else:
         current_greeting = 'Доброй ночи!'
 
@@ -79,10 +84,11 @@ def show_cards_info(filtered_data: list) -> list:
     date - формат 'YYYY-MM-DD HH:MM:SS'
     """
 
-    cards_number = set()
+    cards_number = []
     for tr in filtered_data:
         if tr['Номер карты']:
-            cards_number.add(tr['Номер карты'])
+            cards_number.append(tr['Номер карты'])
+    cards_number = list(dict.fromkeys(cards_number))
 
     result = []
 
@@ -91,8 +97,8 @@ def show_cards_info(filtered_data: list) -> list:
         total_spent = 0
         card_dict['last_digits'] = card_num[-4:]
         for tr in filtered_data:
-            if tr['Номер карты'] == card_num:
-                total_spent -= tr['Сумма платежа']
+            if tr['Номер карты'] == card_num and tr['Сумма платежа'] < 0:
+                total_spent += -tr['Сумма платежа']
         card_dict['total_spent'] = round(total_spent, 2)
         card_dict['cashback'] = round((total_spent / 100 if total_spent >= 0 else 0), 2)
         result.append(card_dict)
@@ -108,11 +114,12 @@ def show_top_transactions(filtered_data: list[dict]) -> list:
     top_5 = []
     top_5_tr = top_transactions[:5]
     for tr in top_5_tr:
-        dict_for_tr = {'date': tr['Дата операции'][:10],
-                       'amount': tr['Сумма платежа'],
-                       'category': tr['Категория'],
-                       'description': tr['Описание']
-                       }
+        dict_for_tr = {
+            'date': tr['Дата операции'][:10],
+            'amount': tr['Сумма платежа'],
+            'category': tr['Категория'],
+            'description': tr['Описание']
+        }
         top_5.append(dict_for_tr)
 
     return top_5
@@ -145,13 +152,13 @@ def show_currency_rates(user_settings: dict) -> Union[list, str]:
             for symbols, price in api_result["rates"].items()
         ]
         return result
-    except requests.exceptions.HTTPError as e:
-        return f"HTTPError: {e.response.status_code} - {e.response.reason}"
-    except requests.exceptions.RequestException as e:
-        return f"RequestException: {e}"
+    except requests.exceptions.HTTPError:
+        return "HTTP Error"
+    except requests.exceptions.RequestException:
+        return "Request Exception Error"
 
 
-def show_stock_prices(user_settings: dict) -> list:
+def show_stock_prices(user_settings: dict) -> Union[list, str]:
     """Функция обработки и вывода необходимых
     (согласно user_settings.json) котировок"""
 
@@ -159,16 +166,23 @@ def show_stock_prices(user_settings: dict) -> list:
     client = finnhub.Client(api_key=apikey)
 
     stock_result = {}
-    for stock_symbol in user_settings["user_stocks"]:
-        price = client.quote(stock_symbol)["c"]
-        stock_result[stock_symbol] = price
+    try:
+        for stock_symbol in user_settings["user_stocks"]:
+            price = client.quote(stock_symbol)["c"]
+            stock_result[stock_symbol] = price
 
-    result = [
-        {"stock": symbol, "price": price}
-        for symbol, price in stock_result.items()
-    ]
-    return result
+        result = [
+            {"stock": symbol, "price": price}
+            for symbol, price in stock_result.items()
+        ]
+        return result
+    except requests.exceptions.HTTPError:
+        return "HTTP Error"
+    except requests.exceptions.RequestException:
+        return "Request Exception Error"
 
 
-if __name__ == '__main__':
-    print(main_page('2021-10-30 15:23:22'))
+# if __name__ == '__main__':
+    # main_page_data_path = '../data/operations.xlsx'
+    # main_page_user_settings_path = '../user_settings.json'
+    # print(main_page('2021-10-30 15:23:22'))
