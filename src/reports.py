@@ -46,6 +46,8 @@ def to_log_decorator(file_name: str = "") -> Any:
         return log_this
 
     return log_decor
+
+
 # ______________________________________________________________________________________________________________________
 
 
@@ -68,25 +70,31 @@ def spending_by_category(transactions: pd.DataFrame,
 
     minus_3_months = true_date - relativedelta(months=3)
 
-    transactions["Дата операции"] = pd.to_datetime(transactions["Дата операции"], dayfirst=True)
+    datetime_df = transactions
 
-    filtered_by_date_df = transactions[
-        (minus_3_months <= transactions["Дата операции"])
-        & (transactions["Дата операции"] <= date)
-    ]
+    datetime_df["Дата операции"] = datetime_df["Дата операции"].apply(
+        lambda x: datetime.datetime.strptime(x, "%d.%m.%Y %H:%M:%S"))
+
+    filtered_by_date_df = datetime_df[
+        (minus_3_months <= datetime_df["Дата операции"])
+        & (datetime_df["Дата операции"] <= true_date)
+        ]
 
     filtered_df = filtered_by_date_df[["Категория", "Сумма операции"]]
 
-    category_df = filtered_df.groupby("Категория")["Сумма операции"].sum().apply(lambda x: -x)
-    category_df = category_df[category_df > 0]
+    category_df = filtered_df.groupby("Категория", as_index=False)["Сумма операции"].sum()
 
-    result = round(category_df[category], 2)
+    result = pd.DataFrame(category_df[category_df["Категория"] == category])
 
-    return result
+    if result.empty:
+        return pd.DataFrame()
+    else:
+        return result
 
 
 # if __name__ == "__main__":
+    # path = '../draft/operations.json'
     # path = '../data/operations.xlsx'
     # from_data = to_open_file(path, False)
-    # x1 = spending_by_category(from_data, "Каршеринг", "2021-10-06 18:43:36")
+    # x1 = spending_by_category(from_data, "3", '2021-12-30 16:23:23')
     # print(x1)

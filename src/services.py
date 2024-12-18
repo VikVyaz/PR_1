@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import DefaultDict
 
-from src.utils import to_open_file
+# from src.utils import to_open_file
 
 
 def cashback_profit(data: list, year: int, month: int) -> dict:
@@ -42,9 +42,9 @@ def to_get_category(data: list) -> dict:
     return sorted_result
 
 
-if __name__ == '__main__':
-    from_data = to_open_file('../data/operations.xlsx')
-#     from_data = to_open_file('../draft/operations.json')
-    from_year = 2021
-    from_month = 9
-    print(cashback_profit(from_data, from_year, from_month))
+# if __name__ == '__main__':
+    # from_data = to_open_file('../data/operations.xlsx')
+    # from_data = to_open_file('../draft/operations.json')
+    # from_year = 2021
+    # from_month = 9
+    # print(cashback_profit(from_data, from_year, from_month))
