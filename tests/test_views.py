@@ -18,10 +18,10 @@ def test_to_get_filtered_data(fixt_in_out_filtered_data: list) -> None:
 
 
 greeting_test = [
-    datetime.datetime(2020, 9, 13, 7, 0, 0),
-    datetime.datetime(2020, 9, 13, 13, 0, 0),
-    datetime.datetime(2020, 9, 13, 19, 0, 0),
-    datetime.datetime(2020, 9, 13, 23, 0, 0)
+    datetime.datetime(2020, 9, 13, 7),
+    datetime.datetime(2020, 9, 13, 13),
+    datetime.datetime(2020, 9, 13, 19),
+    datetime.datetime(2020, 9, 13, 23)
 ]
 
 
