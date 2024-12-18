@@ -6,14 +6,14 @@ from src.views import main_page
 if __name__ == "__main__":
     # ------------------------------------Веб-страницы-----------------------------------
     # ------------------------------------views.py---------------------------------------
-    main_page_date = '2021-10-30 15:23:22'
+    main_page_date = "2021-10-30 15:23:22"
 
     # 1. Страница "Главная"
     print(main_page(main_page_date))
 
     # ------------------------------------Сервисы------------------------------------
     # -----------------------------------services.py---------------------------------
-    input_path = './data/operations.xlsx'
+    input_path = "./data/operations.xlsx"
     from_data = to_open_file(input_path)
     from_year = "2021"
     from_month = "10"
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     print(cashback_profit(from_data, int(from_year), int(from_month)))
 
     # --------------------------------Отчеты------------------------------------
-    path = './data/operations.xlsx'
+    path = "./data/operations.xlsx"
     from_data = to_open_file(path, False)
     category = "Каршеринг"
 

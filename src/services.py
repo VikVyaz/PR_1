@@ -18,12 +18,13 @@ def cashback_profit(data: list, year: int, month: int) -> dict:
 def to_filter_data(data: list, year: int, month: int) -> list:
     """Функция фильтрации транзакций по месяцу и году"""
 
-    filtered_data = list(filter(
-        lambda x:
-        datetime.strptime(x["Дата операции"], '%d.%m.%Y %H:%M:%S').year == year
-        and datetime.strptime(x["Дата операции"], '%d.%m.%Y %H:%M:%S').month == month,
-        data
-    ))
+    filtered_data = list(
+        filter(
+            lambda x: datetime.strptime(x["Дата операции"], "%d.%m.%Y %H:%M:%S").year == year
+            and datetime.strptime(x["Дата операции"], "%d.%m.%Y %H:%M:%S").month == month,
+            data,
+        )
+    )
 
     return filtered_data
 
@@ -34,8 +35,8 @@ def to_get_category(data: list) -> dict:
     result: DefaultDict[str, int] = defaultdict(int)
     for transaction in data:
         for key, value in transaction.items():
-            if key == 'Категория' and transaction['Кэшбэк']:
-                result[value] += transaction['Кэшбэк']
+            if key == "Категория" and transaction["Кэшбэк"]:
+                result[value] += transaction["Кэшбэк"]
 
     sorted_result = dict(sorted(dict(result).items(), key=lambda x: x[1], reverse=True))
 
@@ -43,8 +44,8 @@ def to_get_category(data: list) -> dict:
 
 
 # if __name__ == '__main__':
-    # from_data = to_open_file('../data/operations.xlsx')
-    # from_data = to_open_file('../draft/operations.json')
-    # from_year = 2021
-    # from_month = 9
-    # print(cashback_profit(from_data, from_year, from_month))
+# from_data = to_open_file('../data/operations.xlsx')
+# from_data = to_open_file('../draft/operations.json')
+# from_year = 2021
+# from_month = 9
+# print(cashback_profit(from_data, from_year, from_month))

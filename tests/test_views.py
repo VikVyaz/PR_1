@@ -4,34 +4,43 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from src.views import (greeting, show_cards_info, show_currency_rates, show_stock_prices, show_top_transactions,
-                       to_get_filtered_data)
+from src.views import (
+    greeting,
+    show_cards_info,
+    show_currency_rates,
+    show_stock_prices,
+    show_top_transactions,
+    to_get_filtered_data,
+)
 
 
 def test_to_get_filtered_data(fixt_in_out_filtered_data: list) -> None:
     """Тест для to_get_filtered_data()"""
 
-    assert to_get_filtered_data(
-        fixt_in_out_filtered_data[0],
-        fixt_in_out_filtered_data[1]
-    ) == fixt_in_out_filtered_data[2]
+    assert (
+        to_get_filtered_data(fixt_in_out_filtered_data[0], fixt_in_out_filtered_data[1])
+        == fixt_in_out_filtered_data[2]
+    )
 
 
 greeting_test = [
     datetime.datetime(2020, 9, 13, 7),
     datetime.datetime(2020, 9, 13, 13),
     datetime.datetime(2020, 9, 13, 19),
-    datetime.datetime(2020, 9, 13, 23)
+    datetime.datetime(2020, 9, 13, 23),
 ]
 
 
-@patch('src.views.datetime.datetime')
-@pytest.mark.parametrize("hour, response", [
-    (greeting_test[0], 'Доброе утро!'),
-    (greeting_test[1], 'Добрый день!'),
-    (greeting_test[2], 'Добрый вечер!'),
-    (greeting_test[3], 'Доброй ночи!')
-])
+@patch("src.views.datetime.datetime")
+@pytest.mark.parametrize(
+    "hour, response",
+    [
+        (greeting_test[0], "Доброе утро!"),
+        (greeting_test[1], "Добрый день!"),
+        (greeting_test[2], "Добрый вечер!"),
+        (greeting_test[3], "Доброй ночи!"),
+    ],
+)
 def test_greeting(mock_datetime: MagicMock, hour: list, response: str) -> None:
     """Тест для src.views.greeting()"""
 
@@ -45,15 +54,13 @@ def test_show_cards_info(fixt_transactions: list, fixt_show_cards_info_out: list
     assert show_cards_info(fixt_transactions) == fixt_show_cards_info_out
 
 
-def test_show_top_transactions(
-        fixt_transactions: list,
-        fixt_show_top_transactions_out: list) -> None:
+def test_show_top_transactions(fixt_transactions: list, fixt_show_top_transactions_out: list) -> None:
     """Тест для src.views.show_top_transactions()"""
 
     assert show_top_transactions(fixt_transactions) == fixt_show_top_transactions_out
 
 
-@patch('src.views.requests.get')
+@patch("src.views.requests.get")
 def test_show_currency_rates(mock_get: MagicMock, fixt_currency_rates: list) -> None:
     """Тест для src.views.show_currency_rates()"""
 
@@ -61,7 +68,7 @@ def test_show_currency_rates(mock_get: MagicMock, fixt_currency_rates: list) -> 
     assert show_currency_rates({"user_currencies": "qwerty"}) == fixt_currency_rates[1]
 
 
-@patch('src.views.requests.get')
+@patch("src.views.requests.get")
 def test_show_currency_rates_errors(mock_get: MagicMock, fixt_currency_rates: list) -> None:
     """Тест для обработки ошибок в src.views.show_currency_rates"""
 
@@ -72,18 +79,13 @@ def test_show_currency_rates_errors(mock_get: MagicMock, fixt_currency_rates: li
     assert show_currency_rates({"user_currencies": "qwerty"}) == "Request Exception Error"
 
 
-user_settings_in = {
-    "user_stocks": ["AAPL", "AMZN"]
-}
+user_settings_in = {"user_stocks": ["AAPL", "AMZN"]}
 
-expected_result = [
-    {'stock': 'AAPL', 'price': 1.0},
-    {'stock': 'AMZN', 'price': 1.0}
-]
+expected_result = [{"stock": "AAPL", "price": 1.0}, {"stock": "AMZN", "price": 1.0}]
 
 
-@patch('src.views.finnhub.Client')
-@patch('src.views.os.getenv')
+@patch("src.views.finnhub.Client")
+@patch("src.views.os.getenv")
 def test_show_stock_prices(mock_getenv: MagicMock, mock_client: MagicMock):
     """Тест для src.views.show_stock_prices()"""
 
@@ -96,8 +98,8 @@ def test_show_stock_prices(mock_getenv: MagicMock, mock_client: MagicMock):
     assert show_stock_prices(user_settings_in) == expected_result
 
 
-@patch('src.views.finnhub.Client')
-@patch('src.views.os.getenv')
+@patch("src.views.finnhub.Client")
+@patch("src.views.os.getenv")
 def test_show_stock_prices_errors(mock_getenv: MagicMock, mock_client: MagicMock):
     """Тест для обработки ошибок в src.views.show_stock_prices()"""
 

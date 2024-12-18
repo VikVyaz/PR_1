@@ -25,13 +25,14 @@ def to_log_decorator(file_name: str = "") -> Any:
     log_dir = "./logs"
     os.makedirs(log_dir, exist_ok=True)
 
-    logging.basicConfig(level=logging.INFO,
-                        filename=f"{log_dir}/{file_name}.log",
-                        filemode="w",
-                        encoding='utf-8',
-                        format="[%(asctime)s | %(levelname)s]: %(message)s",
-                        datefmt='%Y-%m-%d %H:%M:%S'
-                        )
+    logging.basicConfig(
+        level=logging.INFO,
+        filename=f"{log_dir}/{file_name}.log",
+        filemode="w",
+        encoding="utf-8",
+        format="[%(asctime)s | %(levelname)s]: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     def log_decor(func: typing.Any) -> typing.Any:
         @wraps(func)
@@ -51,9 +52,7 @@ def to_log_decorator(file_name: str = "") -> Any:
 # ______________________________________________________________________________________________________________________
 
 
-def spending_by_category(transactions: pd.DataFrame,
-                         category: str,
-                         date: Optional[str] = None) -> pd.DataFrame:
+def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> pd.DataFrame:
     """
     Функция вычисления трат по заданной категории за последние 3 месяца от даты.
 
@@ -73,12 +72,12 @@ def spending_by_category(transactions: pd.DataFrame,
     datetime_df = transactions
 
     datetime_df["Дата операции"] = datetime_df["Дата операции"].apply(
-        lambda x: datetime.datetime.strptime(x, "%d.%m.%Y %H:%M:%S"))
+        lambda x: datetime.datetime.strptime(x, "%d.%m.%Y %H:%M:%S")
+    )
 
     filtered_by_date_df = datetime_df[
-        (minus_3_months <= datetime_df["Дата операции"])
-        & (datetime_df["Дата операции"] <= true_date)
-        ]
+        (minus_3_months <= datetime_df["Дата операции"]) & (datetime_df["Дата операции"] <= true_date)
+    ]
 
     filtered_df = filtered_by_date_df[["Категория", "Сумма операции"]]
 
@@ -93,8 +92,8 @@ def spending_by_category(transactions: pd.DataFrame,
 
 
 # if __name__ == "__main__":
-    # path = '../draft/operations.json'
-    # path = '../data/operations.xlsx'
-    # from_data = to_open_file(path, False)
-    # x1 = spending_by_category(from_data, "3", '2021-12-30 16:23:23')
-    # print(x1)
+# path = '../draft/operations.json'
+# path = '../data/operations.xlsx'
+# from_data = to_open_file(path, False)
+# x1 = spending_by_category(from_data, "3", '2021-12-30 16:23:23')
+# print(x1)

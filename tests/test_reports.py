@@ -1,9 +1,6 @@
-from src.reports import to_log_decorator, spending_by_category
 from unittest.mock import patch
-import pandas as pd
-import logging
-import datetime
-import pytest
+
+from src.reports import spending_by_category, to_log_decorator
 
 
 def test_to_log_decorator() -> None:
@@ -13,7 +10,7 @@ def test_to_log_decorator() -> None:
     def test_func(a, b):
         return a + b
 
-    with patch('logging.info') as mock_log_info:
+    with patch("logging.info") as mock_log_info:
 
         assert test_func(1, 1) == 2
 
@@ -25,7 +22,7 @@ def test_to_log_decorator() -> None:
 def test_spending_by_category(fixt_spending_by_category: list) -> None:
     """Тест для src.reports.spending_by_category"""
 
-    result = spending_by_category(fixt_spending_by_category[0], "3", '2021-12-30 16:23:23')
+    result = spending_by_category(fixt_spending_by_category[0], "3", "2021-12-30 16:23:23")
     expected_result = fixt_spending_by_category[1]
 
-    assert result.to_dict('records') == expected_result.to_dict('records')
+    assert result.to_dict("records") == expected_result.to_dict("records")
