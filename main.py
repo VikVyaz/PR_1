@@ -1,7 +1,6 @@
 from src.reports import spending_by_category
 from src.services import cashback_profit
-from src.utils import to_open_file
-from src.views import main_page
+from src.views import main_page, to_open_file
 
 if __name__ == "__main__":
     # ------------------------------------Веб-страницы-----------------------------------

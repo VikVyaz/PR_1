@@ -8,7 +8,7 @@ from typing import Any, Optional
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-# from src.utils import to_open_file
+# from src.views import to_open_file
 
 
 # -------------------------------------------------logging--------------------------------------------------------------
@@ -83,7 +83,7 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
 
     category_df = filtered_df.groupby("Категория", as_index=False)["Сумма операции"].sum()
 
-    result = pd.DataFrame(category_df[category_df["Категория"] == category])
+    result = pd.DataFrame(category_df[category_df["Категория"] == category]).reset_index(drop=True)
 
     if result.empty:
         return pd.DataFrame()

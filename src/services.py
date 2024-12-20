@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import DefaultDict
 
-# from src.utils import to_open_file
+# from src.views import to_open_file
 
 
 def cashback_profit(data: list, year: int, month: int) -> dict:
