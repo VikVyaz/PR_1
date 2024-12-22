@@ -2,7 +2,6 @@ import pandas as pd
 import pytest
 
 # ------------------------------------Веб-страницы-----------------------------------
-# ------------------------------------views.py---------------------------------------
 
 
 @pytest.fixture()
@@ -88,7 +87,8 @@ def fixt_currency_rates() -> list:
 
 
 # ------------------------------------Сервисы------------------------------------
-# -----------------------------------services.py---------------------------------
+
+
 @pytest.fixture()
 def fixt_cashback() -> list:
     data_input = [
@@ -110,7 +110,8 @@ def fixt_expected_get_category() -> dict:
 
 
 # -------------------------------------Отчеты-----------------------------------
-# -----------------------------------reports.py---------------------------------
+
+
 @pytest.fixture()
 def fixt_spending_by_category() -> list:
     """"""
@@ -133,7 +134,6 @@ def fixt_spending_by_category() -> list:
     return [input_df, expected_df]
 
 
-# -----------------------------------utils.py---------------------------------
 @pytest.fixture()
 def fixt_to_open_file() -> list:
     """"""

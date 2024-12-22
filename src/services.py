@@ -1,10 +1,13 @@
+import datetime
 from collections import defaultdict
-from datetime import datetime
 from typing import DefaultDict
 
-# from src.utils import to_open_file
+from src.reports import to_log_decorator
+
+# from src.views import to_open_file
 
 
+@to_log_decorator()
 def cashback_profit(data: list, year: int, month: int) -> dict:
     """Функция вычисления выгодной категории кэшбэка
     в зависимости от года и месяца"""
@@ -20,8 +23,8 @@ def to_filter_data(data: list, year: int, month: int) -> list:
 
     filtered_data = list(
         filter(
-            lambda x: datetime.strptime(x["Дата операции"], "%d.%m.%Y %H:%M:%S").year == year
-            and datetime.strptime(x["Дата операции"], "%d.%m.%Y %H:%M:%S").month == month,
+            lambda x: datetime.datetime.strptime(x["Дата операции"], "%d.%m.%Y %H:%M:%S").year == year
+            and datetime.datetime.strptime(x["Дата операции"], "%d.%m.%Y %H:%M:%S").month == month,
             data,
         )
     )

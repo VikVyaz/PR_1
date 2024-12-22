@@ -8,7 +8,7 @@ from typing import Any, Optional
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-# from src.utils import to_open_file
+# from src.views import to_open_file
 
 
 # -------------------------------------------------logging--------------------------------------------------------------
@@ -28,7 +28,7 @@ def to_log_decorator(file_name: str = "") -> Any:
     logging.basicConfig(
         level=logging.INFO,
         filename=f"{log_dir}/{file_name}.log",
-        filemode="w",
+        filemode="a",
         encoding="utf-8",
         format="[%(asctime)s | %(levelname)s]: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
@@ -83,12 +83,9 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
 
     category_df = filtered_df.groupby("Категория", as_index=False)["Сумма операции"].sum()
 
-    result = pd.DataFrame(category_df[category_df["Категория"] == category])
+    result = pd.DataFrame(category_df[category_df["Категория"] == category]).reset_index(drop=True)
 
-    if result.empty:
-        return pd.DataFrame()
-    else:
-        return result
+    return result
 
 
 # if __name__ == "__main__":
