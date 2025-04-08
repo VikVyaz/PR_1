@@ -80,8 +80,8 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
     ]
 
     filtered_df = filtered_by_date_df[["Категория", "Сумма операции"]]
-
-    category_df = filtered_df.groupby("Категория", as_index=False)["Сумма операции"].sum()
+    only_expenses = filtered_df[filtered_df['Сумма операции'] < 0]
+    category_df = only_expenses.groupby("Категория", as_index=False)["Сумма операции"].sum()
 
     result = pd.DataFrame(category_df[category_df["Категория"] == category]).reset_index(drop=True)
 

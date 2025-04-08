@@ -23,21 +23,24 @@ def main_page(date: str) -> dict:
     5. Курс S&P500
     """
 
-    data = to_open_file(main_page_data_path)
+    data = to_open_file(main_page_data_path, False)
     user_settings = to_open_file(main_page_user_settings_path)
     filtered_data = to_get_filtered_data(date, data)
-    result = {
-        "greeting": greeting(),
-        "cards": show_cards_info(filtered_data),
-        "top_transactions": show_top_transactions(filtered_data),
-        "currency_rate": show_currency_rates(dict(user_settings)),
-        "stock_prices": show_stock_prices(dict(user_settings)),
-    }
+    # result = {
+    #     "greeting": greeting(),
+    #     "cards": show_cards_info(filtered_data),
+    #     "top_transactions": show_top_transactions(filtered_data),
+    #     "currency_rate": show_currency_rates(dict(user_settings)),
+    #     "stock_prices": show_stock_prices(dict(user_settings)),
+    # }
 
-    return result
+    # return result
+    return filtered_data
 
 
-# if __name__ == '__main__':
-#     main_page_data_path = '../data/operations.xlsx'
-#     main_page_user_settings_path = '../user_settings.json'
-#     print(main_page('2021-10-30 15:23:22'))
+if __name__ == '__main__':
+    main_page_data_path = '../data/operations.xlsx'
+    main_page_user_settings_path = '../user_settings.json'
+    # print(main_page('2021-12-30 15:23:22'))
+    # print(show_cards_info(main_page('2021-12-07 15:23:22')))
+    print(show_top_transactions(main_page('2021-12-07 15:23:22')))

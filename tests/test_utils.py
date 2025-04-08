@@ -59,10 +59,9 @@ def test_to_open_file_json_failure(mock_json_err: MagicMock, mock_load: MagicMoc
 def test_to_get_filtered_data(fixt_in_out_filtered_data: list) -> None:
     """Тест для src.utils.to_get_filtered_data()"""
 
-    assert (
-        to_get_filtered_data(fixt_in_out_filtered_data[0], fixt_in_out_filtered_data[1])
-        == fixt_in_out_filtered_data[2]
-    )
+    test = to_get_filtered_data(fixt_in_out_filtered_data[0], fixt_in_out_filtered_data[1])
+    assert isinstance(test, pd.DataFrame)
+    assert test.to_dict('records') == fixt_in_out_filtered_data[2]
 
 
 greeting_test = [
@@ -90,16 +89,16 @@ def test_greeting(mock_datetime: MagicMock, hour: list, response: str) -> None:
     assert greeting() == response
 
 
-def test_show_cards_info(fixt_transactions: list, fixt_show_cards_info_out: list) -> None:
+def test_show_cards_info(fixt_show_cards: list) -> None:
     """Тест для src.utils.show_card_info()"""
 
-    assert show_cards_info(fixt_transactions) == fixt_show_cards_info_out
+    assert show_cards_info(fixt_show_cards[0]) == fixt_show_cards[1]
 
 
-def test_show_top_transactions(fixt_transactions: list, fixt_show_top_transactions_out: list) -> None:
+def test_show_top_transactions(fixt_show_top_transactions: list) -> None:
     """Тест для src.utils.show_top_transactions()"""
 
-    assert show_top_transactions(fixt_transactions) == fixt_show_top_transactions_out
+    assert show_top_transactions(fixt_show_top_transactions[0]) == fixt_show_top_transactions[1]
 
 
 @patch("src.utils.requests.get")

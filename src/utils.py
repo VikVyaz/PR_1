@@ -49,7 +49,7 @@ def to_open_file(path: str, true_list_or_false_df: bool = True) -> Any:
         return df
 
 
-def to_get_filtered_data(date: str, transactions: list[dict]) -> list:
+def to_get_filtered_data(date: str, transactions: pd.DataFrame) -> pd.DataFrame:
     """Функция фильтрации транзакций по исходной дате
     date - str формата '%Y-%m-%d %H:%M:%S'
     """
@@ -57,16 +57,14 @@ def to_get_filtered_data(date: str, transactions: list[dict]) -> list:
     desired_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     beginning_of_the_month = datetime.datetime(desired_date.year, desired_date.month, 1, 0, 0, 0)
 
-    filtered_data = list(
-        filter(
-            lambda x: beginning_of_the_month
-            <= datetime.datetime.strptime(x["Дата операции"], "%d.%m.%Y %H:%M:%S")
-            <= desired_date,
-            transactions,
-        )
-    )
+    tr_df = transactions.copy()
+    tr_df['Дата операции'] = pd.to_datetime(tr_df['Дата операции'], format="%d.%m.%Y %H:%M:%S")
+    tr_result = tr_df[
+        (tr_df['Дата операции'] >= beginning_of_the_month) &
+        (tr_df['Дата операции'] <= desired_date)
+        ]
 
-    return filtered_data
+    return tr_result
 
 
 def greeting() -> str:
@@ -86,7 +84,7 @@ def greeting() -> str:
     return current_greeting
 
 
-def show_cards_info(filtered_data: list) -> list:
+def show_cards_info(filtered_data: pd.DataFrame) -> list:
     """Функция отображения данный по картам:
     1. 4 последних цифры карт,
     2. Общие траты,
@@ -94,45 +92,23 @@ def show_cards_info(filtered_data: list) -> list:
     date - формат 'YYYY-MM-DD HH:MM:SS'
     """
 
-    cards_number = []
-    for tr in filtered_data:
-        if tr["Номер карты"]:
-            cards_number.append(tr["Номер карты"])
-    cards_number = list(dict.fromkeys(cards_number))
-
-    result = []
-
-    for card_num in list(cards_number):
-        card_dict = {}
-        total_spent = 0
-        card_dict["last_digits"] = card_num[-4:]
-        for tr in filtered_data:
-            if tr["Номер карты"] == card_num and tr["Сумма платежа"] < 0:
-                total_spent += -tr["Сумма платежа"]
-        card_dict["total_spent"] = round(total_spent, 2)
-        card_dict["cashback"] = round((total_spent / 100 if total_spent >= 0 else 0), 2)
-        result.append(card_dict)
-
-    return result
+    grouped = filtered_data[filtered_data['Сумма операции'] < 0][['Номер карты', 'Сумма операции']].groupby(
+        'Номер карты').sum().round(2)
+    grouped['Сумма операции'] = grouped['Сумма операции'].apply(lambda x: abs(x))
+    grouped['Кэшбек'] = grouped['Сумма операции'].apply(lambda x: round(x / 100, 1))
+    grouped = grouped.reset_index()
+    return grouped.to_dict('records')
 
 
-def show_top_transactions(filtered_data: list[dict]) -> list:
+def show_top_transactions(filtered_data: pd.DataFrame) -> list:
     """Функция вывода топ-5 транзакций по сумме платежа"""
 
-    top_transactions = sorted(filtered_data, key=lambda x: abs(x["Сумма платежа"]), reverse=True)
+    top_5 = filtered_data[filtered_data['Сумма операции'] < 0][
+        ["Сумма операции", "Дата операции", "Номер карты", "Категория", "Описание"]]
 
-    top_5 = []
-    top_5_tr = top_transactions[:5]
-    for tr in top_5_tr:
-        dict_for_tr = {
-            "date": tr["Дата операции"][:10],
-            "amount": tr["Сумма платежа"],
-            "category": tr["Категория"],
-            "description": tr["Описание"],
-        }
-        top_5.append(dict_for_tr)
-
-    return top_5
+    top_5 = top_5.dropna(subset=['Номер карты']).sort_values('Сумма операции')
+    top_5['Дата операции'] = top_5['Дата операции'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    return top_5.head().to_dict('records')
 
 
 def show_currency_rates(user_settings: dict) -> Union[list, str]:
@@ -179,3 +155,24 @@ def show_stock_prices(user_settings: dict) -> Union[list, str]:
         return "HTTP Error"
     except requests.exceptions.RequestException:
         return "Request Exception Error"
+
+
+in_df = pd.DataFrame({
+        "Сумма операции": [-5000, -4000, -3000, -2000, -1000],
+        "Дата операции": [
+            pd.Timestamp('2021-10-14 16:44:00'),
+            pd.Timestamp('2021-10-14 16:44:00'),
+            pd.Timestamp('2021-10-14 16:44:00'),
+            pd.Timestamp('2021-10-14 16:44:00'),
+            pd.Timestamp('2021-10-14 16:44:00')
+        ],
+        "Номер карты": ['1', '2', '3', '4', '5'],
+        "Категория": ['1', '2', '3', '4', '5'],
+        "Описание": ['1', '2', '3', '4', '5']
+    })
+
+in_date = "2021-10-20 16:44:00"
+# filtered = to_get_filtered_data(in_date, in_data)
+# print(filtered.to_dict('records'))
+# print(show_cards_info(filtered))
+print(show_top_transactions(in_df))

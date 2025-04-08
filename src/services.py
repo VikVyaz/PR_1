@@ -37,9 +37,9 @@ def to_get_category(data: list) -> dict:
 
     result: DefaultDict[str, int] = defaultdict(int)
     for transaction in data:
-        for key, value in transaction.items():
-            if key == "Категория" and transaction["Кэшбэк"]:
-                result[value] += transaction["Кэшбэк"]
+        category = transaction["Категория"]
+        if category and transaction["Кэшбэк"]:
+            result[category] += transaction["Кэшбэк"]
 
     sorted_result = dict(sorted(dict(result).items(), key=lambda x: x[1], reverse=True))
 
