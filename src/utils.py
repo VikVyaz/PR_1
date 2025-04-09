@@ -171,8 +171,8 @@ in_df = pd.DataFrame({
         "Описание": ['1', '2', '3', '4', '5']
     })
 
-in_date = "2021-10-20 16:44:00"
+# in_date = "2021-10-20 16:44:00"
 # filtered = to_get_filtered_data(in_date, in_data)
 # print(filtered.to_dict('records'))
 # print(show_cards_info(filtered))
-print(show_top_transactions(in_df))
+# print(show_top_transactions(in_df))

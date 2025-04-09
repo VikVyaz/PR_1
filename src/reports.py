@@ -51,7 +51,57 @@ def to_log_decorator(file_name: str = "") -> Any:
 
 # ______________________________________________________________________________________________________________________
 
+def to_save_result(file_name: str = 'results', file_type: str = 'json') -> Any:
+    """
+    Декоратор, сохраняющий результирующий DataFrame(!!!) в файл
 
+    :param file_name: str; имя файла без расширения
+    :param file_type: str; расширение по умолчанию = json. Доступные расширения: 'json', 'csv', 'excel'(или 'xslx')
+    :return:
+    """
+
+    def save_result(func):
+        @wraps(func)
+        def save_this(*args, **kwargs):
+            try:
+                result = func(*args, **kwargs)
+                if not isinstance(result, pd.DataFrame):
+                    raise TypeError('Файл не сохранен. Ожидался DataFrame')
+
+                data_path = os.path.join(os.getcwd(), 'data')
+                os.makedirs(data_path, exist_ok=True)
+
+                clean_type = file_type.lower()
+                path = os.path.join(data_path, f'{file_name}.{clean_type}')
+
+                if clean_type == 'json':
+                    result.to_json(f'{path}', orient='records', lines=True, force_ascii=False)
+                elif clean_type == 'csv':
+                    result.to_csv(f'{path}', index=False,encoding='utf-8-sig')
+                elif clean_type in ['excel', 'xlsx']:
+                    result.to_excel(f'{path}', index=False, engine='openpyxl')
+                else:
+                    raise ValueError('Файл не сохранен. Доступные типы файла json, csv или excel(xlsx)')
+
+                print('Файл успешно сохранен')
+                return result
+
+            except TypeError as te:
+                print(f'{te}')
+            except ValueError as ve:
+                print(f'{ve}')
+            except Exception as e:
+                print(f'Неизвестная ошибка {e}')
+
+        return save_this
+    return save_result
+
+
+# ______________________________________________________________________________________________________________________
+
+@to_save_result('spending_by_category')
+@to_save_result('spending_by_category', 'csv')
+@to_save_result('spending_by_category', 'xlsx')
 def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> pd.DataFrame:
     """
     Функция вычисления трат по заданной категории за последние 3 месяца от даты.
@@ -94,3 +144,19 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
 # from_data = to_open_file(path, False)
 # x1 = spending_by_category(from_data, "3", '2021-12-30 16:23:23')
 # print(x1)
+# @to_save_result(file_type='xlsx')
+# def df_return():
+#     return pd.DataFrame(
+#         {
+#             "Дата операции": [
+#                 "21.11.2021 16:44:00",
+#                 "10.10.2021 16:44:00",
+#                 "10.10.2021 16:44:00",
+#                 "07.08.2021 16:44:00",
+#             ],
+#             "Сумма операции": [2, -3, 4, -4],
+#             "Категория": ["2", "3", "3", "3"],
+#         }
+#     )
+#
+# df_return()
